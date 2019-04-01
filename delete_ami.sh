@@ -1,6 +1,5 @@
 #!/bin/bash
-# This script simply deregister a single AMI and delete its related snapshot(s)
-
+# This script simply deregisters a single AMI and deletes its related snapshot(s)
 
 usage(){ 
     echo "Usage: $0 <ami_id>" 
@@ -15,8 +14,8 @@ else
 fi
 
 snaps=$(aws ec2 describe-images --image-ids "${ami_id}" --query 'Images[*].BlockDeviceMappings[*].Ebs.SnapshotId' --output text)
-echo "Let's deregister AMI ${ami_id} and its snaps : ${snaps}"
 
+echo "Let's deregister AMI ${ami_id} and its snaps : ${snaps}"
 
 echo "Deregister AMI ${ami_id}"
 aws ec2 deregister-image --image-id ${ami_id}
