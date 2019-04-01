@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# This script simply gives a list of the current account IAM user
+# This script simply gives a list of IAM users with a password age older the MAX_PASSWORD_AGE
 import boto3
 import sys
 import datetime,time
@@ -10,9 +10,7 @@ def main(argv):
 
    MAX_PASSWORD_AGE=365
 
-   iam_resource = boto3.resource('iam')
    iam_client = boto3.client('iam')
-
    credential_report = get_credential_report(iam_client)
 
    for row in credential_report:
