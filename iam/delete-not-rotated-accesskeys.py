@@ -36,7 +36,7 @@ def remove_not_rotated_accesskeys(iam_client, username, max_accesskey_age, my_ac
                                                                                                     username,
                                                                                                     accesskey_create_date,
                                                                                                     accesskey_create_age))
-            #iam_client.delete_access_key(UserName = username, AccessKeyId = accesskey['AccessKeyId'])
+            iam_client.delete_access_key(UserName = username, AccessKeyId = accesskey['AccessKeyId'])
 
 
 def get_credential_report(iam_client):
