@@ -1,5 +1,6 @@
 #!/usr/bin/python
 # This script simply checks and activates default EBS encryption
+# Scope : per account and per region
 import boto3
 import boto3.ec2
 import sys
@@ -16,8 +17,8 @@ def main(argv):
             print("EbsEncryptionByDefault is not already activated, let's activate it.")
             response = ec2_client.enable_ebs_encryption_by_default()
             print("EbsEncryptionByDefault for %s on %s is now : %s" % (AwsAccountId,
-                                                                RegionName,
-                                                                response['EbsEncryptionByDefault']))
+                                                                       RegionName,
+                                                                       response['EbsEncryptionByDefault']))
     except ClientError as e:
         print(e)
 
