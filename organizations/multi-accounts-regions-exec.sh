@@ -23,7 +23,7 @@ for account in ${accounts}; do
     export AWS_SESSION_TOKEN=`cat ${TMP_ROLE_FILE} | jq -r .Credentials.SessionToken`
     if [ -n "${AWS_SECRET_ACCESS_KEY}" ] && [ -n "${AWS_ACCESS_KEY_ID}" ] && [ -n "${AWS_SESSION_TOKEN}" ]; then
        for region in ${regions}; do
-           AWS_DEFAULT_REGION=${region}
+           export AWS_DEFAULT_REGION=${region}
            command-to-exec
        done
     fi
