@@ -19,23 +19,25 @@ def find_ecs_instances_by_cluster(cluster_name):
     paginator = ecs_client.get_paginator('list_container_instances')
     for list_resp in paginator.paginate(cluster=cluster_name):
         arns = list_resp['containerInstanceArns']
-        desc_resp = ecs_client.describe_container_instances(
-                                cluster=cluster_name,
-                                containerInstances=arns)
+        desc_resp = ecs_client.describe_container_instances(cluster=cluster_name,
+                                                            containerInstances=arns)
     return desc_resp['containerInstances']
 
 
 def display_ecs_instances(container_instances):
     for container_instance in container_instances:
-        print('arn=%s, id=%s, status=%s, runningTasksCount=%s' % (
-                container_instance['containerInstanceArn'],
-                container_instance['ec2InstanceId'],
-                container_instance['status'],
-                container_instance['runningTasksCount']))
+        display_ecs_instance(container_instance)
+
+
+def display_ecs_instance(container_instance):
+    print('arn=%s, id=%s, status=%s, runningTasksCount=%s' % (container_instance['containerInstanceArn'],
+                                                              container_instance['ec2InstanceId'],
+                                                              container_instance['status'],
+                                                              container_instance['runningTasksCount']))
 
 
 def rolling_restart_cluster_instances(cluster_name, ecs_instances):
-    if all_active_instances(ecs_instances):
+    if is_all_active_instances(ecs_instances):
         for ecs_instance in ecs_instances:
             restart_active_ecs_instance(ecs_instance, cluster_name)
     else:
@@ -44,24 +46,21 @@ def rolling_restart_cluster_instances(cluster_name, ecs_instances):
 
 def restart_active_ecs_instance(container_instance, cluster_name):
     if container_instance['status'] == "ACTIVE":
-        print("Update %s to DRAINING" % (
-                container_instance['containerInstanceArn']))
+        print("Update %s to DRAINING" % (container_instance['containerInstanceArn']))
         ecs_client.update_container_instances_state(
-                cluster=cluster_name,
-                containerInstances=[container_instance['containerInstanceArn']],
-                status='DRAINING')
-        runningTasksCount = container_instance['runningTasksCount']
+            cluster=cluster_name,
+            containerInstances=[container_instance['containerInstanceArn']],
+            status='DRAINING')
+        running_tasks_count = container_instance['runningTasksCount']
         # wait until there is no more taks running on the instance
-        while runningTasksCount != 0:
-            container_dict = ecs_client.describe_container_instances(
-                                        cluster=cluster_name,
-                                        containerInstances=[container_instance['containerInstanceArn']])
-            runningTasksCount = container_dict['containerInstances'][0]['runningTasksCount']
-            print("%s runningTasksCount : %s" % (
-                                    container_instance['containerInstanceArn'],
-                                    runningTasksCount))
+        while running_tasks_count != 0:
+            container_dict = ecs_client.describe_container_instances(cluster=cluster_name,
+                                                                     containerInstances=[container_instance['containerInstanceArn']])
+            running_tasks_count = container_dict['containerInstances'][0]['runningTasksCount']
+            print("%s runningTasksCount : %s" % (container_instance['containerInstanceArn'],
+                                                 running_tasks_count))
             time.sleep(10)
-        if runningTasksCount == 0:
+        if running_tasks_count == 0:
             initial_num_instances = get_number_ecs_instances_by_cluster(cluster_name)
             print("Terminate instance %s" % (container_instance['ec2InstanceId']))
             ec2_client.terminate_instances(InstanceIds=[container_instance['ec2InstanceId']])
@@ -73,13 +72,14 @@ def restart_active_ecs_instance(container_instance, cluster_name):
                 time.sleep(10)
 
 
-# Return True is all the ECS instance are in ACTIVE status
-def all_active_instances(ecs_instances):
-    is_all_active = True
-    for container_instance in ecs_instances:
-        if container_instance['status'] != "ACTIVE":
-            is_all_active = False
-    return is_all_active
+def is_all_active_instances(ecs_instances):
+    '''
+    Return True is all the ECS instances are in ACTIVE status
+    '''
+    for ecs_instance in ecs_instances:
+        if ecs_instance['status'] != "ACTIVE":
+            return False
+    return True
 
 
 def main(argv):
