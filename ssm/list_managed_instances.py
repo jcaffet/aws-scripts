@@ -1,7 +1,8 @@
-#!/usr/bin/python
-# This script simply gives a list of the current Online SSM managed instances
-import boto3
+'''
+This script simply gives a list of the current Online SSM managed instances
+'''
 import sys
+import boto3
 
 
 def main(argv):
@@ -17,9 +18,12 @@ def main(argv):
         },
     ],
     )
-    print(response['InstanceInformationList'])
+    for instance_information in response['InstanceInformationList']:
+        print("%s;%s;%s;%s" % (instance_information['InstanceId'],
+                               instance_information['PingStatus'],
+                               instance_information['AgentVersion'],
+                               instance_information['PlatformName']))
 
 
 if __name__ == '__main__':
     main(sys.argv[1:])
-
