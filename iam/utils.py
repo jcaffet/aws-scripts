@@ -51,4 +51,6 @@ def number_of_days_since_now_datetime(mydate: datetime):
     Entry : string ISO8601 format like 2017-03-01T09:51:51+00:00
     Returns a integer number
     '''
+    if mydate is None:
+        return 0
     return (datetime.now(timezone.utc) - mydate).days
