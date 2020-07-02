@@ -19,7 +19,7 @@ def main(argv):
     print("user;password_age")
     for row in credential_report:
         if row['password_enabled'] == "true":
-            password_age = utils.number_of_days_since_now(row['password_last_changed'])
+            password_age = utils.number_of_days_since_now_from_report_date(row['password_last_changed'])
             if password_age > max_password_age:
                 print("%s;%s" % (row['user'], password_age))
 
