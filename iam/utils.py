@@ -33,7 +33,7 @@ def get_credential_report(iam_client):
         return get_credential_report(iam_client)
 
 
-def number_of_days_since_now(mydate):
+def number_of_days_since_now_from_report_date(mydate):
     '''
     Calculates the number of days between today and the specifed date
     Entry : string ISO8601 format like 2017-03-01T09:51:51+00:00
@@ -43,3 +43,12 @@ def number_of_days_since_now(mydate):
         return mydate
     else:
         return (datetime.now(timezone.utc) - datetime.fromisoformat(mydate)).days
+
+
+def number_of_days_since_now_datetime(mydate: datetime):
+    '''
+    Calculates the number of days between today and the specifed date
+    Entry : string ISO8601 format like 2017-03-01T09:51:51+00:00
+    Returns a integer number
+    '''
+    return (datetime.now(timezone.utc) - mydate).days
