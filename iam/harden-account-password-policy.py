@@ -1,9 +1,10 @@
-#!/usr/bin/python
-# This script hardens if necessary the account password policy
-# Pay attention that credential reports are renewed by AWS every 4 hours.
+'''
+This script hardens if necessary the account password policy
+'''
 import boto3
 from botocore.exceptions import ClientError
 import sys
+
 
 def main(argv):
 
@@ -16,7 +17,7 @@ def main(argv):
     PASSWORD_REUSE_PREVENTION = 24
     MAX_PASSWORD_AGE = 90
     HARD_EXPIRY = False
-    
+
     updatePolicyRequired = False
     iam_client = boto3.client('iam')
     try:
